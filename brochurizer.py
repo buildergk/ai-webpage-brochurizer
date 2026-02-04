@@ -11,11 +11,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-API_BASE_URL = os.getenv("API_BASE_URL")
-LLM_API_KEY = os.getenv("LLM_API_KEY")
-LLM_MODEL_NAME = os.getenv("LLM_MODEL_NAME")
+BASE_URL = os.getenv("BASE_URL")
+API_KEY = os.getenv("API_KEY")
+MODEL = os.getenv("MODEL")
 
-llm = OpenAI(base_url=API_BASE_URL, api_key=LLM_API_KEY)
+llm = OpenAI(base_url=BASE_URL, api_key=API_KEY)
 
 
 class Brochurizer:
@@ -51,7 +51,7 @@ class Brochurizer:
 
     def get_brochure_links(self, url: str):
         messages = self.get_brochure_link_messages(url=url)
-        response = llm.chat.completions.create(model=LLM_MODEL_NAME, messages=messages)
+        response = llm.chat.completions.create(model=MODEL, messages=messages)
         return f"\n\n{response.choices[0].message.content}"
 
     def get_translation_messages(self, contents: str, language: str):
@@ -101,7 +101,7 @@ class Brochurizer:
             messages = self.get_create_brochure_messages(contents)
             print("Creating brochure...")
             brochure_content = ""
-            response = llm.chat.completions.create(model=LLM_MODEL_NAME, messages=messages, stream=True)
+            response = llm.chat.completions.create(model=MODEL, messages=messages, stream=True)
             for chunk in response:
                 content = chunk.choices[0].delta.content if chunk.choices else ""
                 print(content, end='', flush=True)
@@ -110,7 +110,7 @@ class Brochurizer:
                 messages = self.get_translation_messages(brochure_content, language)
                 print(f"Translating brochure in {language} language...")
                 brochure_content = ""
-                response = llm.chat.completions.create(model=LLM_MODEL_NAME, messages=messages, stream=True)
+                response = llm.chat.completions.create(model=MODEL, messages=messages, stream=True)
                 for chunk in response:
                     content = chunk.choices[0].delta.content if chunk.choices else ""
                     print(content, end='', flush=True)
